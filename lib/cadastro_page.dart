@@ -1,8 +1,11 @@
 import 'dart:async';
+import 'package:image_picker/image_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:path/path.dart';
 import 'package:flutter/material.dart';
-import 'package:unimatchteste/Notificacao_page.dart';
-
+import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:io';
 import 'home_page.dart';
 import 'login_page.dart';
 
@@ -11,21 +14,41 @@ class CadastroPage extends StatefulWidget {
   _CadastroPageState createState() => _CadastroPageState();
 }
 
+final FirebaseAuth _auth = FirebaseAuth.instance;
 final FirebaseFirestore _db = FirebaseFirestore.instance;
+final FirebaseStorage _storage = FirebaseStorage.instance;
 
 class _CadastroPageState extends State<CadastroPage> {
-  int counter = 0;
+  bool _allFieldsFilled = false;
+  late File _image;
+  DateTime datNasc = DateTime.now();
   String email = '',
-      DatNasc = '',
       Uni = '',
       nome = '',
       Telefone = '',
       senha = '',
       ConfSenha = '',
-      CPF = '',
       UniPref = '',
       Nu = '';
-  //Null Nu = null;
+
+  void _checkFields() {
+    if (nome.isNotEmpty &&
+        email.isNotEmpty &&
+        Telefone.isNotEmpty &&
+        datNasc != null &&
+        Uni.isNotEmpty &&
+        UniPref.isNotEmpty &&
+        senha.isNotEmpty &&
+        ConfSenha.isNotEmpty) {
+      setState(() {
+        _allFieldsFilled = true;
+      });
+    } else {
+      setState(() {
+        _allFieldsFilled = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -65,6 +88,7 @@ class _CadastroPageState extends State<CadastroPage> {
                   onChanged: (text) {
                     print(text);
                     email = text;
+                    _checkFields();
                   },
                   decoration: InputDecoration(
                     // coloca borda no textfield
@@ -72,17 +96,6 @@ class _CadastroPageState extends State<CadastroPage> {
                     border: OutlineInputBorder(),
                   ),
                 ),
-                /**Container(height: 10,),
-                TextField(
-                  onChanged: (text){
-                    print(text);
-                    CPF = text;
-                  },
-                  decoration: InputDecoration(      // coloca borda no textfield
-                    labelText: 'CPF',
-                    border: OutlineInputBorder(),
-                  ),
-                ),**/
                 Container(
                   height: 10,
                 ),
@@ -90,6 +103,7 @@ class _CadastroPageState extends State<CadastroPage> {
                   onChanged: (text) {
                     print(text);
                     Telefone = text;
+                    _checkFields();
                   },
                   decoration: InputDecoration(
                     // coloca borda no textfield
@@ -103,7 +117,8 @@ class _CadastroPageState extends State<CadastroPage> {
                 TextField(
                   onChanged: (text) {
                     print(text);
-                    DatNasc = text;
+                    datNasc = DateTime.parse(text);
+                    _checkFields();
                   },
                   decoration: InputDecoration(
                     // coloca borda no textfield
@@ -118,6 +133,7 @@ class _CadastroPageState extends State<CadastroPage> {
                   onChanged: (text) {
                     print(text);
                     Uni = text;
+                    _checkFields();
                   },
                   decoration: InputDecoration(
                     // coloca borda no textfield
@@ -132,6 +148,7 @@ class _CadastroPageState extends State<CadastroPage> {
                   onChanged: (text) {
                     print(text);
                     UniPref = text;
+                    _checkFields();
                   },
                   decoration: InputDecoration(
                     // coloca borda no textfield
@@ -146,6 +163,7 @@ class _CadastroPageState extends State<CadastroPage> {
                   onChanged: (text) {
                     print(text);
                     senha = text;
+                    _checkFields();
                   },
                   obscureText: true, //deixa senha nao visivel
                   decoration: InputDecoration(
@@ -161,6 +179,7 @@ class _CadastroPageState extends State<CadastroPage> {
                   onChanged: (text) {
                     print(text);
                     ConfSenha = text;
+                    _checkFields();
                   },
                   obscureText: true, //deixa senha nao visivel
                   decoration: InputDecoration(
@@ -170,36 +189,86 @@ class _CadastroPageState extends State<CadastroPage> {
                   ),
                 ),
                 Container(
+                  height: 10,
+                ),
+                Container(
                   height: 20,
                 ),
                 ElevatedButton(
-                    onPressed: () async {
-                      if (senha == ConfSenha) {
-                        // Adicionar dados ao Firestore
-                        FirebaseFirestore.instance.collection('usuarios').add({
-                          'nome': nome,
-                          'email': email,
-                          'cpf': CPF,
-                          'telefone': Telefone,
-                          'data_nascimento': DatNasc,
-                          'universidade': Uni,
-                          'universidade_preferida': UniPref,
-                          'senha': senha
-                        });
-
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => LoginPage()),
-                        );
-                      } else {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => NotificacaoSenhaPage()),
-                        );
-                      }
-                    },
-                    child: Icon(Icons.done)),
+                  onPressed: _allFieldsFilled
+                      ? () async {
+                          if (senha == ConfSenha) {
+                            if (senha.length < 6) {
+                              // Adicione este código para notificar o usuário quando a senha é fraca
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                      'A senha deve ter pelo menos 6 caracteres'),
+                                ),
+                              );
+                            } else {
+                              // Verifica se o usuário já está logado antes de criar uma nova conta
+                              if (_auth.currentUser != null) {
+                                await _auth.signOut();
+                              }
+                              try {
+                                UserCredential userCredential =
+                                    await _auth.createUserWithEmailAndPassword(
+                                        email: email, password: senha);
+                                print('Usuário criado com sucesso!');
+                                // Adicionar dados ao Firestore
+                                String uid = userCredential.user!.uid;
+                                await FirebaseFirestore.instance
+                                    .collection('usuarios')
+                                    .doc(uid)
+                                    .set({
+                                  'nome': nome,
+                                  'email': email,
+                                  'telefone': Telefone,
+                                  'data_nascimento':
+                                      Timestamp.fromDate(datNasc),
+                                  'universidade': Uni,
+                                  'universidade_preferida': UniPref,
+                                  'senha': senha,
+                                  'uid':
+                                      uid // Adiciona o UID do usuário no Firestore
+                                });
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => LoginPage()),
+                                );
+                              } on FirebaseAuthException catch (e) {
+                                if (e.code == 'weak-password') {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text('A senha é muito fraca'),
+                                    ),
+                                  );
+                                } else if (e.code == 'email-already-in-use') {
+                                  // Adicione este código para notificar o usuário quando o email já está em uso
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text('O email já está em uso'),
+                                    ),
+                                  );
+                                }
+                              } catch (e) {
+                                print(e);
+                              }
+                            }
+                          } else {
+                            // Adicione este código para notificar o usuário quando a confirmação de senha não for igual à senha
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('As senhas não conferem'),
+                              ),
+                            );
+                          }
+                        }
+                      : null,
+                  child: Icon(Icons.done),
+                ),
               ],
             ),
           ),
@@ -208,52 +277,3 @@ class _CadastroPageState extends State<CadastroPage> {
     );
   }
 }
-
-/**import 'package:flutter/material.dart';
-
-    class LoginPage extends StatefulWidget{ // cria um estado HomePage
-    @override                            // Da pra alterar enquanto roda o app
-    State<LoginPage> createState() {      // Dinamico
-    return LoginPageState();
-    }
-    }
-
-    class LoginPageState extends State<LoginPage>{
-    int counter = 0;
-
-    @override
-    Widget build(BuildContext context) {
-    return Scaffold(                      // Tela branca no fundo
-    appBar: AppBar(                   // Molda a tela para se assemelhar a um App
-    title: Text('UniMatch'),
-    ),
-    body: Container(
-    height: 800,
-    width: 500,
-    color: Colors.pinkAccent,
-    child: Align(                     // alinhamento do container
-    alignment: Alignment.center, //Essas duas linhas podem ser subs por center
-    child: Container(
-    child : Center(
-    child: Text('UNIMATCH',
-    style: TextStyle(color: Colors.white, fontSize: 20.0)),
-    ),
-    height: 200,
-    width: 200,
-    color: Colors.pink,
-    ),
-    ),
-    ),
-    floatingActionButton: FloatingActionButton( // botao flutuante dir/baixo
-    child: Icon(Icons.add), // icone do botao
-    onPressed: () {
-    setState(() { //muda o estado a cada clicada na tela
-    counter++;
-    print(counter); // printa no terminal
-    });
-    } ,
-    ),
-    );
-    }
-
-    }**/

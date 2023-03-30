@@ -1,7 +1,6 @@
-import 'dart:async';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:unimatchteste/Notificacao_page.dart';
 
 import 'home_page.dart';
 import 'login_page.dart';
@@ -12,203 +11,250 @@ class ConfigPage extends StatefulWidget {
 }
 
 class _ConfigPageState extends State<ConfigPage> {
-  int counter = 0;
-  String email = '', DatNasc = '', Uni = '', nome = '', Telefone = '',
-      senha = '', ConfSenha = '', CPF = '', UniPref = '', Nu = '';
-  //Null Nu = null;
+  final _formKey = GlobalKey<FormState>();
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
+  String _email = '',
+      _dob = '',
+      _university = '',
+      _name = '',
+      _phone = '',
+      _password = '',
+      _confirmPassword = '',
+      _cpf = '',
+      _preferredUniversity = '',
+      _nu = '';
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(                   // Molda a tela para se assemelhar a um App
-        centerTitle : true,
-        title : Text('Informações Pessoais'),
+      key: _scaffoldKey,
+      appBar: AppBar(
+        centerTitle: true,
+        title: Text('Informações Pessoais'),
       ),
-      body: SingleChildScrollView(  //permite dar Scroll na tela enquanto digita
-        child: SizedBox(            //Box de Login
-          width: MediaQuery.of(context).size.width, // delimita o tamanho (X,Y)
+      body: SingleChildScrollView(
+        child: SizedBox(
+          width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height,
           child: Padding(
-            padding: const EdgeInsets.all(8.0),  //Distancia da borda do celular
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                TextField(
-                  onChanged: (text){
-                    print(text);
-                    nome = text;
-                  },
-                  keyboardType: TextInputType.emailAddress,
-                  decoration: InputDecoration(      // coloca borda no textfield
-                    labelText: 'Nome',
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-                Container(height: 10,),
-                TextField(
-                  onChanged: (text){
-                    print(text);
-                    email = text;
-                  },
-                  decoration: InputDecoration(      // coloca borda no textfield
-                    labelText: 'Email',
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-                /**Container(height: 10,),
-                    TextField(
-                    onChanged: (text){
-                    print(text);
-                    CPF = text;
+            padding: const EdgeInsets.all(8.0),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  TextFormField(
+                    onChanged: (text) {
+                      print(text);
+                      _name = text;
                     },
-                    decoration: InputDecoration(      // coloca borda no textfield
-                    labelText: 'CPF',
-                    border: OutlineInputBorder(),
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Nome é obrigatório.';
+                      }
+                      return null;
+                    },
+                    keyboardType: TextInputType.name,
+                    decoration: InputDecoration(
+                      labelText: 'Nome',
+                      border: OutlineInputBorder(),
                     ),
-                    ),**/
-                Container(height: 10,),
-                TextField(
-                  onChanged: (text){
-                    print(text);
-                    Telefone = text;
-                  },
-                  decoration: InputDecoration(      // coloca borda no textfield
-                    labelText: 'Telefone',
-                    border: OutlineInputBorder(),
                   ),
-                ),
-                Container(height: 10,),
-                TextField(
-                  onChanged: (text){
-                    print(text);
-                    DatNasc = text;
-                  },
-                  decoration: InputDecoration(      // coloca borda no textfield
-                    labelText: 'Data de Nascimento',
-                    border: OutlineInputBorder(),
+                  SizedBox(
+                    height: 10,
                   ),
-                ),
-                Container(height: 10,),
-                TextField(
-                  onChanged: (text){
-                    print(text);
-                    Uni = text;
-                  },
-                  decoration: InputDecoration(      // coloca borda no textfield
-                    labelText: 'Universidade',
-                    border: OutlineInputBorder(),
+                  TextFormField(
+                    onChanged: (text) {
+                      print(text);
+                      _email = text;
+                    },
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Email é obrigatório.';
+                      }
+                      return null;
+                    },
+                    keyboardType: TextInputType.emailAddress,
+                    decoration: InputDecoration(
+                      labelText: 'Email',
+                      border: OutlineInputBorder(),
+                    ),
                   ),
-                ),
-                Container(height: 10,),
-                TextField(
-                  onChanged: (text){
-                    print(text);
-                    UniPref = text;
-                  },
-                  decoration: InputDecoration(      // coloca borda no textfield
-                    labelText: 'Universidade que mais lhe agrada',
-                    border: OutlineInputBorder(),
+                  SizedBox(
+                    height: 10,
                   ),
-                ),
-                Container(height: 10,),
-                TextField(
-                  onChanged: (text){
-                    print(text);
-                    senha = text;
-                  },
-                  obscureText:  true,  //deixa senha nao visivel
-                  decoration: InputDecoration(      // coloca borda no textfield
-                    labelText: 'Senha',
-                    border: OutlineInputBorder(),
+                  TextFormField(
+                    onChanged: (text) {
+                      print(text);
+                      _phone = text;
+                    },
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Telefone é obrigatório.';
+                      }
+                      return null;
+                    },
+                    keyboardType: TextInputType.phone,
+                    decoration: InputDecoration(
+                      labelText: 'Telefone',
+                      border: OutlineInputBorder(),
+                    ),
                   ),
-                ),
-                Container(height: 10,),
-                TextField(
-                  onChanged: (text){
-                    print(text);
-                    ConfSenha = text;
-                  },
-                  obscureText:  true,  //deixa senha nao visivel
-                  decoration: InputDecoration(      // coloca borda no textfield
-                    labelText: 'Confirmar senha',
-                    border: OutlineInputBorder(),
+                  SizedBox(
+                    height: 10,
                   ),
-                ),
-
-                Container(height: 20,),
-                ElevatedButton(onPressed: (){
-                  if(senha == ConfSenha){
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => HomePage()),
-                    );
-                  }else{
-                    Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => NotificacaoSenhaPage()),
-                    );
-                  }
-                  //RETORNAR ConfSenha COMO NULL,LIMPAR O Q FOI DIGITADO
-                  /**ConfSenha.replaceAllMapped( Nu, (match) => Nu,);**/
-                  /**setState(() {
-                      ConfSenha = null;
-                      return ConfSenha.nu;
-                      });**/
-                }, child: Text('Confirmar Alterações!')),
-              ],
+                  TextFormField(
+                    onChanged: (text) {
+                      print(text);
+                      _dob = text;
+                    },
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Data de nascimento é obrigatória.';
+                      }
+                      return null;
+                    },
+                    keyboardType: TextInputType.datetime,
+                    decoration: InputDecoration(
+                      labelText: 'Data de Nascimento',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  TextFormField(
+                    onChanged: (text) {
+                      print(text);
+                      _university = text;
+                    },
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Universidade é obrigatória.';
+                      }
+                      return null;
+                    },
+                    keyboardType: TextInputType.name,
+                    decoration: InputDecoration(
+                      labelText: 'Universidade',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  TextFormField(
+                    onChanged: (text) {
+                      print(text);
+                      _preferredUniversity = text;
+                    },
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Universidade preferida é obrigatória.';
+                      }
+                      return null;
+                    },
+                    keyboardType: TextInputType.name,
+                    decoration: InputDecoration(
+                      labelText: 'Universidade que mais lhe agrada',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  TextFormField(
+                    onChanged: (text) {
+                      print(text);
+                      _password = text;
+                    },
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Senha é obrigatória.';
+                      }
+                      return null;
+                    },
+                    obscureText: true,
+                    decoration: InputDecoration(
+                      labelText: 'Senha',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  TextFormField(
+                    onChanged: (text) {
+                      print(text);
+                      _confirmPassword = text;
+                    },
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Confirme sua senha.';
+                      }
+                      if (value != _password) {
+                        return 'As senhas não coincidem.';
+                      }
+                      return null;
+                    },
+                    obscureText: true,
+                    decoration: InputDecoration(
+                      labelText: 'Confirmar senha',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  ElevatedButton(
+                    onPressed: () async {
+                      if (_formKey.currentState!.validate()) {
+                        try {
+                          User? user = FirebaseAuth.instance.currentUser;
+                          if (user != null) {
+                            String uid = user.uid;
+                            await FirebaseFirestore.instance
+                                .collection('users')
+                                .doc(uid)
+                                .update({
+                              'name': _name,
+                              'email': _email,
+                              'phone': _phone,
+                              'dob': _dob,
+                              'university': _university,
+                              'preferredUniversity': _preferredUniversity,
+                              'password': _password,
+                            });
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => HomePage()),
+                            );
+                          } else {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => LoginPage()),
+                            );
+                          }
+                        } catch (e) {
+                          print('Erro: $e');
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Erro ao atualizar informações.'),
+                            ),
+                          );
+                        }
+                      }
+                    },
+                    child: Text('Confirmar Alterações!'),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
       ),
-
     );
   }
 }
-
-/**import 'package:flutter/material.dart';
-
-    class LoginPage extends StatefulWidget{ // cria um estado HomePage
-    @override                            // Da pra alterar enquanto roda o app
-    State<LoginPage> createState() {      // Dinamico
-    return LoginPageState();
-    }
-    }
-
-    class LoginPageState extends State<LoginPage>{
-    int counter = 0;
-
-    @override
-    Widget build(BuildContext context) {
-    return Scaffold(                      // Tela branca no fundo
-    appBar: AppBar(                   // Molda a tela para se assemelhar a um App
-    title: Text('UniMatch'),
-    ),
-    body: Container(
-    height: 800,
-    width: 500,
-    color: Colors.pinkAccent,
-    child: Align(                     // alinhamento do container
-    alignment: Alignment.center, //Essas duas linhas podem ser subs por center
-    child: Container(
-    child : Center(
-    child: Text('UNIMATCH',
-    style: TextStyle(color: Colors.white, fontSize: 20.0)),
-    ),
-    height: 200,
-    width: 200,
-    color: Colors.pink,
-    ),
-    ),
-    ),
-    floatingActionButton: FloatingActionButton( // botao flutuante dir/baixo
-    child: Icon(Icons.add), // icone do botao
-    onPressed: () {
-    setState(() { //muda o estado a cada clicada na tela
-    counter++;
-    print(counter); // printa no terminal
-    });
-    } ,
-    ),
-    );
-    }
-
-    }**/
