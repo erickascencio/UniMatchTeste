@@ -214,7 +214,7 @@ class HomePageState extends State<HomePage> {
               color: Colors.white,
             ),
             onPressed: () {
-              Navigator.of(context).pushNamed('/perfil');
+              Navigator.of(context).pushNamed('/chat_page');
             },
           )
         ],
