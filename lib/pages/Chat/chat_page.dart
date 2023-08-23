@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:unimatchteste/Chat/message_model.dart';
-import 'package:unimatchteste/Chat/user_model.dart';
+import 'package:unimatchteste/pages/Chat/message_model.dart';
+import 'package:unimatchteste/pages/Chat/user_model.dart';
 
 class ChatScreen extends StatefulWidget {
   final User user;
@@ -26,7 +26,7 @@ class _ChatScreenState extends State<ChatScreen> {
       padding: EdgeInsets.symmetric(horizontal: 25.0, vertical: 15.0),
       width: MediaQuery.of(context).size.width * 0.75,
       decoration: BoxDecoration(
-          color: isMe ? Theme.of(context).accentColor : Color(0xFFFFEFEE),
+          color: isMe ? Theme.of(context).colorScheme.secondary : Color(0xFFFFEFEE),
           borderRadius: isMe
               ? BorderRadius.only(
             topLeft: Radius.circular(15.0),

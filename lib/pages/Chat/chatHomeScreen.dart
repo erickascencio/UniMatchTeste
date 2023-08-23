@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:unimatchteste/Chat/matchesFavoritos.dart';
-import 'package:unimatchteste/Chat/category_selector.dart';
+import 'package:unimatchteste/pages/Chat/matchesFavoritos.dart';
+import 'package:unimatchteste/pages/Chat/category_selector.dart';
 
 import 'chatsRecentes.dart';
 import 'message_model.dart';

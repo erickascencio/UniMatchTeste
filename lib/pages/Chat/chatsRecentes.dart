@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:unimatchteste/Chat/chat_page.dart';
+import 'package:unimatchteste/pages/Chat/chat_page.dart';
 import 'message_model.dart';
 
 class ChatsRecentes extends StatelessWidget {

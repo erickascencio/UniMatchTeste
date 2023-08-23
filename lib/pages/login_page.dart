@@ -1,5 +1,6 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:unimatchteste/controller/security/UserAuth.dart';
+import '../controller/service/LoginService.dart';
 import 'cadastro_page.dart';
 import 'home_page.dart';
 
@@ -9,6 +10,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  UserAuth authService = UserAuth();
   int counter = 0;
   String email = '';
   String senha = '';
@@ -42,7 +44,7 @@ class _LoginPageState extends State<LoginPage> {
                       email = text;
                     },
                     keyboardType: TextInputType.emailAddress,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       // coloca borda no textfield
                       labelText: 'Usuário',
                       border: OutlineInputBorder(),
@@ -57,7 +59,7 @@ class _LoginPageState extends State<LoginPage> {
                       senha = text;
                     },
                     obscureText: true, //deixa senha nao visivel
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       // coloca borda no textfield
                       labelText: 'Senha',
                       border: OutlineInputBorder(),
@@ -65,33 +67,23 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   ElevatedButton(
                     onPressed: () async {
-                      try {
-                        UserCredential userCredential = await FirebaseAuth
-                            .instance
-                            .signInWithEmailAndPassword(
-                          email: email,
-                          password: senha,
-                        );
-                        print('Login realizado com sucesso!');
+                      SecurityController securityController = SecurityController(authService);
+                      String result =
+                          await securityController.signIn(email, senha);
+                      if (result == 'success') {
                         Navigator.push(
                           context,
                           MaterialPageRoute(builder: (context) => HomePage()),
                         );
-                      } on FirebaseAuthException catch (e) {
-                        if (e.code == 'user-not-found') {
-                          print('Usuário não encontrado');
-                        } else if (e.code == 'wrong-password') {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('Senha incorreta'),
-                            ),
-                          );
-                        }
-                      } catch (e) {
-                        print(e);
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(result),
+                          ),
+                        );
                       }
                     },
-                    child: Icon(Icons.navigate_next),
+                    child: const Icon(Icons.navigate_next),
                   ),
                   Container(
                     height: 50,

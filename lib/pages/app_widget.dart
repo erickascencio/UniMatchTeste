@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:unimatchteste/Chat/chatHomeScreen.dart';
-import 'package:unimatchteste/Chat/chat_page.dart';
-import 'package:unimatchteste/cadastro_page.dart';
-import 'package:unimatchteste/config_page.dart';
-import 'package:unimatchteste/loading_page.dart';
-import 'package:unimatchteste/perfil_page.dart';
+import 'package:unimatchteste/pages/Chat/chatHomeScreen.dart';
+import 'package:unimatchteste/pages/Chat/chat_page.dart';
+import 'package:unimatchteste/pages/cadastro_page.dart';
+import 'package:unimatchteste/pages/config_page.dart';
+import 'package:unimatchteste/pages/loading_page.dart';
+import 'package:unimatchteste/pages/perfil_page.dart';
+import 'login_page.dart';
 
 import 'home_page.dart';
-import 'login_page.dart';
+
 
 class AppWidget extends StatelessWidget{ // cria uma build AppWidget
   // Nao da pra alterar enquanto roda o App

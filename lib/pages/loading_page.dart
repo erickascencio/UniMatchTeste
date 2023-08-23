@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 
-import 'package:unimatchteste/login_page.dart';
+import 'package:unimatchteste/pages/login_page.dart';
 
 class LoadingPage extends StatefulWidget {
 

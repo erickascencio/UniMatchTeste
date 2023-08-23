@@ -3,9 +3,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:uuid/uuid.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:unimatchteste/login_page.dart';
-import 'package:unimatchteste/perfil_page.dart';
-import 'package:unimatchteste/cadastro_page.dart';
+import 'package:unimatchteste/pages/login_page.dart';
+import 'package:unimatchteste/pages/perfil_page.dart';
+import 'package:unimatchteste/pages/cadastro_page.dart';
 
 class HomePage extends StatefulWidget {
   @override

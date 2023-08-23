@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:unimatchteste/Chat/message_model.dart';
+import 'package:unimatchteste/pages/Chat/message_model.dart';
 
 import 'chat_page.dart';
 

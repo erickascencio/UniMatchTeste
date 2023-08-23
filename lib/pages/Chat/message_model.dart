@@ -1,4 +1,4 @@
-import 'package:unimatchteste/Chat/user_model.dart';
+import 'package:unimatchteste/pages/Chat/user_model.dart';
 
 class Message{
   final User sender;
