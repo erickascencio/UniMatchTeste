@@ -1,11 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:unimatchteste/controller/UserController.dart';
 import 'package:unimatchteste/model/UserModel.dart';
 
 class CadastroService {
   UserModel user;
-
+  
   CadastroService(this.user);
 
   Future<void> registerUser() async {
@@ -72,4 +73,5 @@ class CadastroService {
       textColor: Colors.white,
     );
   }
+
 }

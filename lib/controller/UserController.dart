@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:unimatchteste/model/UserModel.dart';
 
 class UserController {
@@ -33,8 +36,26 @@ UserModel user;
     user.senha = senha;
   }
 
+
+
   void updateConfSenha(String confSenha) {
-    user.confSenha = confSenha;
+   user.confSenha = confSenha;
+  }
+
+   Future<void> updateUserData(Map<String, dynamic> data) async {
+    return await user.updateUserData(data);
+  }
+
+  Future<String> uploadImage(File image) async {
+    return await user.uploadImage(image);
+  }
+
+  Future<void> updatePrimeiroLogin(bool primeiroLogin) async {
+    user.primeiroLogin = primeiroLogin;
+    await FirebaseFirestore.instance
+        .collection('usuarios')
+        .doc(user.uid)
+        .update({'primeiroLogin': primeiroLogin});
   }
 
   Future<void> registerUser() async {

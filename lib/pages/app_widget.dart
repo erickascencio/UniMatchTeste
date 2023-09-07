@@ -29,14 +29,5 @@ class AppWidget extends StatelessWidget{ // cria uma build AppWidget
       },// tela Home
 
     );
-    /**return Container(
-        child: Center(
-        child: Text(
-        title,
-        textDirection: TextDirection.ltr,
-        style: TextStyle(color: Colors.white, fontSize: 20.0),
-        ),
-        ),
-        );**/
   }
 }

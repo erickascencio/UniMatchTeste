@@ -1,8 +1,12 @@
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:path/path.dart';
 
 class UserModel {
 
+  String uid;
   String nome;
   String email;
   String telefone;
@@ -11,8 +15,10 @@ class UserModel {
   String uniPref;
   String senha;
   String confSenha;
+  bool primeiroLogin;
 
   UserModel({
+     required this.uid,
     required this.nome,
     required this.email,
     required this.telefone,
@@ -20,8 +26,23 @@ class UserModel {
     required this.uni,
     required this.uniPref,
     required this.senha,
-    required this.confSenha,
+    this.confSenha = '',
+    this.primeiroLogin = true,
   });
+
+  final FirebaseFirestore _db = FirebaseFirestore.instance;
+  final FirebaseStorage _storage = FirebaseStorage.instance;
+
+  Future<void> updateUserData(Map<String, dynamic> data) async {
+    await _db.collection('usuarios').doc(uid).update(data);
+  }
+
+  Future<String> uploadImage(File image) async {
+    final Reference storageRef = _storage.ref().child('perfil').child(uid).child(basename(image.path));
+    final UploadTask uploadTask = storageRef.putFile(image);
+    final TaskSnapshot taskSnapshot = await uploadTask.whenComplete(() {});
+    return await taskSnapshot.ref.getDownloadURL();
+  }
 
  Future<void> registerUser() async {
   try {
@@ -36,8 +57,8 @@ class UserModel {
             'data_nascimento': Timestamp.fromDate(datNasc),
             'universidade': uni,
             'universidade_preferida': uniPref,
-            'senha': senha,
             'uid': uid,
+            'primeiroLogin': primeiroLogin,
           });
         } catch (e) {
           print(e);

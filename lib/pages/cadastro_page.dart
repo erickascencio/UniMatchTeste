@@ -26,16 +26,10 @@ class _CadastroPageState extends State<CadastroPage> {
   bool _allFieldsFilled = false;
   late File _image;
   DateTime datNasc = DateTime.now();
-  String email = '',
-      Uni = '',
-      nome = '',
-      Telefone = '',
-      senha = '',
-      ConfSenha = '',
-      UniPref = '',
-      Nu = '';
+
 
   UserController userController = UserController(UserModel(
+    uid: '',
     nome: '',
     email: '',
     telefone: '',
@@ -43,7 +37,7 @@ class _CadastroPageState extends State<CadastroPage> {
     uni: '',
     uniPref: '',
     senha: '',
-    confSenha: '',
+   
   ));
 
   Future<void> _selectDate(BuildContext context) async {
@@ -79,6 +73,7 @@ class _CadastroPageState extends State<CadastroPage> {
   }
 
   List<String> listItems = [
+    "Selecione sua Universidade",
     "Unicentro - Cedeteg",
     "Unicentro - Santa Cruz",
     "Campo Real",
@@ -86,7 +81,7 @@ class _CadastroPageState extends State<CadastroPage> {
     "Guairacá",
     "Universidade Guarapuava"
   ];
-  String selectedValue = "Unicentro - Cedeteg";
+  String selectedValue = "Selecione sua Universidade";
 
   Widget buildDropdownButton() {
     List<DropdownMenuItem<String>> dropdownItems = [];

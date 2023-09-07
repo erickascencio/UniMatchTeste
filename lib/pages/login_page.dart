@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:unimatchteste/controller/security/UserAuth.dart';
+import 'package:unimatchteste/pages/perfil_page.dart';
 import '../controller/service/LoginService.dart';
 import 'cadastro_page.dart';
 import 'home_page.dart';
@@ -67,10 +68,15 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   ElevatedButton(
                     onPressed: () async {
-                      SecurityController securityController = SecurityController(authService);
+                      LoginService securityController = LoginService();
                       String result =
                           await securityController.signIn(email, senha);
-                      if (result == 'success') {
+                      if (result == 'first_login') {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => PerfilPage()),
+                        );
+                      } else if (result == 'success') {
                         Navigator.push(
                           context,
                           MaterialPageRoute(builder: (context) => HomePage()),
